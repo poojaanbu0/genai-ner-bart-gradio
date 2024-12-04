@@ -4,14 +4,18 @@
 To design and develop a prototype application for Named Entity Recognition (NER) by leveraging a fine-tuned BART model and deploying the application using the Gradio framework for user interaction and evaluation.
 
 ### PROBLEM STATEMENT:
+The challenge is to build an NER system capable of identifying named entities (e.g., people, organizations, locations) in text, using a pre-trained BART model fine-tuned for this task. The system should be interactive, allowing users to input text and see the recognized entities in real-time.
 
 ### DESIGN STEPS:
 
-#### STEP 1:
+#### STEP 1: Fine-tune the BART model
+Start by fine-tuning the BART model for NER tasks. This involves training the model on a labeled NER dataset with text data that contains named entities (e.g., people, places, organizations).
 
-#### STEP 2:
+#### STEP 2: Create an API for NER model inference
+Develop an API endpoint that takes input text and returns the recognized entities using the fine-tuned BART model.
 
-#### STEP 3:
+#### STEP 3: Integrate the API with Gradio
+Build a Gradio interface that takes user input, passes it to the NER model via the API, and displays the results as highlighted text with identified entities.
 
 ### PROGRAM:
 ```python

@@ -14,7 +14,96 @@ To design and develop a prototype application for Named Entity Recognition (NER)
 #### STEP 3:
 
 ### PROGRAM:
+```python
+import os
+import io
+from IPython.display import Image, display, HTML
+from PIL import Image
+import base64 
+from dotenv import load_dotenv, find_dotenv
+import requests
+import json
+import gradio as gr
+
+# Load environment variables
+_ = load_dotenv(find_dotenv())  # Read local .env file
+
+# Retrieve the API key and URL from environment variables
+hf_api_key = os.getenv("HF_API_KEY")
+API_URL = os.getenv("API_URL")
+
+# Verify that the environment variables are loaded
+print(f"API Key: {hf_api_key}")
+print(f"API URL: {API_URL}")
+
+# Helper function to send API requests
+def get_completion(inputs, parameters=None, ENDPOINT_URL=API_URL):
+    headers = {
+        "Authorization": f"Bearer {hf_api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {"inputs": inputs}
+    if parameters is not None:
+        data.update({"parameters": parameters})
+    response = requests.post(ENDPOINT_URL, headers=headers, data=json.dumps(data))
+
+    print(f"Response status code: {response.status_code}")
+    if response.status_code == 200:
+        print(f"Response content: {response.content.decode('utf-8')}")
+    else:
+        print("Error in API call")
+
+    return json.loads(response.content.decode("utf-8"))
+
+
+# Function to merge subword tokens (e.g., "San" and "Francisco" into "San Francisco")
+def merge_tokens(tokens):
+    merged_tokens = []
+    for token in tokens:
+        print(f"Token: {token}")
+        if merged_tokens and token['entity'].startswith('I-') and merged_tokens[-1]['entity'].endswith(token['entity'][2:]):
+            last_token = merged_tokens[-1]
+            last_token['word'] += token['word'].replace('##', '')
+            last_token['end'] = token['end']
+            last_token['score'] = (last_token['score'] + token['score']) / 2
+        else:
+            merged_tokens.append(token)
+    return merged_tokens
+
+
+# NER function to process input and call the API
+def ner(input):
+    try:
+        output = get_completion(input, parameters=None, ENDPOINT_URL=API_URL)
+        merged_tokens = merge_tokens(output)
+        return {"text": input, "entities": merged_tokens}
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"text": input, "entities": [{"word": "Error", "entity": str(e), "score": 1.0}]}
+
+
+# Initialize Gradio interface
+gr.close_all()
+demo = gr.Interface(
+    fn=ner,
+    inputs=[gr.Textbox(label="Text to find entities", lines=2)],
+    outputs=[gr.HighlightedText(label="Text with entities")],
+    title="NER with dslim/bert-base-NER",
+    description="Find entities using the `dslim/bert-base-NER` model under the hood!",
+    allow_flagging="never",
+    examples=[
+        "My name is Andrew, I'm building DeeplearningAI and I live in California",
+        "My name is Poli, I live in Vienna and work at HuggingFace"
+    ]
+)
+
+# Launch the Gradio interface
+demo.launch()
+```
 
 ### OUTPUT:
 
+![389215445-4b275e08-4e20-4c71-b1c9-d650f3186112](https://github.com/user-attachments/assets/8df72317-a0ec-4354-b943-4452533dd31f)
+
 ### RESULT:
+Thus, developed an NER prototype application with user interaction and evaluation features, using a fine-tuned BART model deployed through the Gradio framework.

@@ -20,6 +20,23 @@ Build a Gradio interface that takes user input, passes it to the NER model via t
 ### PROGRAM:
 ```python
 import os
+
+# Set the Hugging Face API key directly
+os.environ["HF_API_KEY"] = "NER_BART"  # Replace with your actual API key
+
+# Retrieve and print the API key to ensure it's set correctly
+hf_api_key = os.getenv("HF_API_KEY")
+print(hf_api_key)  # Should print the API key
+
+import os
+
+# Set the API URL directly
+os.environ["API_URL"] = "https://api-inference.huggingface.co/models/dslim/bert-base-NER"
+# Retrieve API URL from environment variables
+API_URL = os.getenv("API_URL")
+print(API_URL)
+
+import os
 import io
 from IPython.display import Image, display, HTML
 from PIL import Image
